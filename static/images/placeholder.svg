@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400" role="img" aria-label="Placeholder image">
+  <defs>
+    <linearGradient id="gp" x1="0" x2="1">
+      <stop offset="0%" stop-color="#8e9eab"/>
+      <stop offset="100%" stop-color="#eef2f3"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#gp)"/>
+  <g fill="#333" opacity="0.7">
+    <rect x="140" y="120" width="520" height="160" rx="12" ry="12" fill="#ffffffaa" stroke="#333"/>
+    <text x="400" y="205" font-family="Inter, Arial, sans-serif" font-size="36" text-anchor="middle">Image</text>
+    <text x="400" y="240" font-family="Inter, Arial, sans-serif" font-size="16" text-anchor="middle" opacity="0.9">Placeholder</text>
+  </g>
+</svg>

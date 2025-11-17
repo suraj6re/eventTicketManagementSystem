@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+     Navigation 
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><a href="index.html">Event Hub</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link active">Movies</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Sports</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Plays</a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+     Page Header 
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Discover Events</h1>
+            <p class="page-subtitle">Find and book tickets for amazing experiences</p>
+        </div>
+    </section>
+
+    
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-container">
+                <div class="search-filter">
+                    <div class="search-box-small">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" placeholder="Search events..." class="search-input-small" id="eventSearch">
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="categoryFilter">Category:</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="movies">Movies</option>
+                        <option value="concerts">Concerts</option>
+                        <option value="plays">Plays</option>
+                        <option value="sports">Sports</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="locationFilter">Location:</label>
+                    <select id="locationFilter" class="filter-select">
+                        <option value="">All Locations</option>
+                        <option value="mumbai">Mumbai</option>
+                        <option value="delhi">Delhi</option>
+                        <option value="bangalore">Bangalore</option>
+                        <option value="chennai">Chennai</option>
+                        <option value="kolkata">Kolkata</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="priceFilter">Price Range:</label>
+                    <select id="priceFilter" class="filter-select">
+                        <option value="">All Prices</option>
+                        <option value="0-500">₹0 - ₹500</option>
+                        <option value="500-1000">₹500 - ₹1000</option>
+                        <option value="1000-2000">₹1000 - ₹2000</option>
+                        <option value="2000+">₹2000+</option>
+                    </select>
+                </div>
+
+                <button class="clear-filters-btn" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="events-section">
+        <div class="container">
+            <div class="events-header">
+                <h2 class="section-title">Available Events</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="events-grid" id="eventsGrid">
+                <!-- Static fallback cards (always render first) -->
+                <div class="event-card" onclick="viewEventDetails(1)">
+                    <img src="/generic-superhero-team-poster.png" alt="Avengers: Endgame" class="event-image">
+                    <div class="event-info">
+                        <div class="event-content">
+                            <span class="event-category">movies</span>
+                            <h3 class="event-title">Avengers: Endgame</h3>
+                            <div class="event-details">
+                                <div class="event-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Wed, 15 Jan 2025</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-clock"></i>
+                                    <span>7:00 PM</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>PVR Cinemas, Phoenix Mall</span>
+                                </div>
+                            </div>
+                            <div class="event-price">₹350</div>
+                        </div>
+                        <div class="event-actions">
+                            <a href="event-details.html?id=1" class="btn-secondary">View Details</a>
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart({id:1,title:'Avengers: Endgame',category:'movies',location:'mumbai',date:'2025-01-15',time:'7:00 PM',venue:'PVR Cinemas, Phoenix Mall',price:350,image:'/generic-superhero-team-poster.png',description:'The epic conclusion to the Infinity Saga'})">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card" onclick="viewEventDetails(2)">
+                    <img src="/coldplay-concert-stage.jpg" alt="Coldplay Live Concert" class="event-image">
+                    <div class="event-info">
+                        <div class="event-content">
+                            <span class="event-category">concerts</span>
+                            <h3 class="event-title">Coldplay Live Concert</h3>
+                            <div class="event-details">
+                                <div class="event-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Mon, 20 Jan 2025</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-clock"></i>
+                                    <span>8:00 PM</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>DY Patil Stadium</span>
+                                </div>
+                            </div>
+                            <div class="event-price">₹2500</div>
+                        </div>
+                        <div class="event-actions">
+                            <a href="event-details.html?id=2" class="btn-secondary">View Details</a>
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart({id:2,title:'Coldplay Live Concert',category:'concerts',location:'mumbai',date:'2025-01-20',time:'8:00 PM',venue:'DY Patil Stadium',price:2500,image:'/coldplay-concert-stage.jpg',description:'Experience the magic of Coldplay live'})">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card" onclick="viewEventDetails(3)">
+                    <img src="/romeo-juliet-theater-play.jpg" alt="Romeo and Juliet" class="event-image">
+                    <div class="event-info">
+                        <div class="event-content">
+                            <span class="event-category">plays</span>
+                            <h3 class="event-title">Romeo and Juliet</h3>
+                            <div class="event-details">
+                                <div class="event-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Sat, 18 Jan 2025</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-clock"></i>
+                                    <span>6:30 PM</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>National Centre for Performing Arts</span>
+                                </div>
+                            </div>
+                            <div class="event-price">₹800</div>
+                        </div>
+                        <div class="event-actions">
+                            <a href="event-details.html?id=3" class="btn-secondary">View Details</a>
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart({id:3,title:'Romeo and Juliet',category:'plays',location:'delhi',date:'2025-01-18',time:'6:30 PM',venue:'National Centre for Performing Arts',price:800,image:'/romeo-juliet-theater-play.jpg',description:'Shakespeare\'s timeless love story'})">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card" onclick="viewEventDetails(4)">
+                    <img src="/cricket-stadium-ipl-match.jpg" alt="IPL Final Match" class="event-image">
+                    <div class="event-info">
+                        <div class="event-content">
+                            <span class="event-category">sports</span>
+                            <h3 class="event-title">IPL Final Match</h3>
+                            <div class="event-details">
+                                <div class="event-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Sat, 25 Jan 2025</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-clock"></i>
+                                    <span>7:30 PM</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Wankhede Stadium</span>
+                                </div>
+                            </div>
+                            <div class="event-price">₹1500</div>
+                        </div>
+                        <div class="event-actions">
+                            <a href="event-details.html?id=4" class="btn-secondary">View Details</a>
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart({id:4,title:'IPL Final Match',category:'sports',location:'mumbai',date:'2025-01-25',time:'7:30 PM',venue:'Wankhede Stadium',price:1500,image:'/cricket-stadium-ipl-match.jpg',description:'The ultimate cricket showdown'})">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="load-more-container">
+                <button class="btn-primary load-more-btn" onclick="loadMoreEvents()">
+                    Load More Events
+                </button>
+            </div>
+        </div>
+    </section>
+
+     Footer 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Event Hub</h3>
+                    <p>Your ultimate destination for entertainment booking</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="events.html">Browse Events</a></li>
+                        <li><a href="cart.html">Booking Cart</a></li>
+                        <li><a href="login.html">Login / Sign up</a></li>
+                        <li><a href="profile.html">My Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="events.html">Movies</a></li>
+                        <li><a href="events.html">Concerts</a></li>
+                        <li><a href="events.html">Sports</a></li>
+                        <li><a href="events.html">Plays</a></li>
+                    </ul>
+                </div>
+                <!-- Social links removed per UX (non-functional) -->
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Event Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="cart-module.js"></script>
+    <script src="script.js"></script>
+    <script src="events.js"></script>
+</body>
+</html>

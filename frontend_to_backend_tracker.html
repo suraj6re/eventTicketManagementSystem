@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend → Backend Activity Tracker - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--primary-black);
+            color: var(--text-white);
+        }
+        .tracker-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .activity-panel {
+            background: var(--secondary-black);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border-gray);
+        }
+        .activity-panel h2 {
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-primary);
+        }
+        .action-button.user { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .action-button.event { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .action-button.booking { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .action-button.venue { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        
+        .log-panel {
+            background: var(--primary-black);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-blue);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 6px 0;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid transparent;
+        }
+        .log-frontend { background: rgba(102, 126, 234, 0.1); border-left-color: #667eea; }
+        .log-api { background: rgba(52, 152, 219, 0.1); border-left-color: #3498db; }
+        .log-flask { background: rgba(155, 89, 182, 0.1); border-left-color: #9b59b6; }
+        .log-python { background: rgba(230, 126, 34, 0.1); border-left-color: #e67e22; }
+        .log-c { background: rgba(39, 174, 96, 0.1); border-left-color: #27ae60; }
+        .log-error { background: rgba(231, 76, 60, 0.1); border-left-color: #e74c3c; }
+        
+        .flow-diagram {
+            background: var(--primary-black);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-step {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .flow-arrow {
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+        
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-gray);
+            font-size: 12px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            background: var(--primary-black);
+            border: 1px solid var(--border-gray);
+            border-radius: 6px;
+            color: var(--text-white);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Frontend → Backend Activity Tracker</h1>
+    <p>Watch in real-time which <code>eventhub.c</code> functions are called when you perform frontend actions.</p>
+
+    <div class="flow-diagram">
+        <div class="flow-step">Frontend Action</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">JavaScript API</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">Flask Endpoint</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">Python Binding</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">C Function</div>
+    </div>
+
+    <div class="tracker-container">
+        <!-- User Actions -->
+        <div class="activity-panel">
+            <h2><i class="fas fa-user"></i> User Management</h2>
+            
+            <div class="input-group">
+                <label>Email:</label>
+                <input type="email" id="userEmail" value="demo@example.com">
+            </div>
+            <div class="input-group">
+                <label>Password:</label>
+                <input type="password" id="userPassword" value="password123">
+            </div>
+            
+            <button class="action-button user" onclick="trackUserRegistration()">
+                <i class="fas fa-user-plus"></i> Register User
+            </button>
+            <button class="action-button user" onclick="trackUserLogin()">
+                <i class="fas fa-sign-in-alt"></i> Login User
+            </button>
+        </div>
+
+        <!-- Event Actions -->
+        <div class="activity-panel">
+            <h2><i class="fas fa-calendar"></i> Event Management</h2>
+            
+            <div class="input-group">
+                <label>Event ID:</label>
+                <input type="text" id="eventId" value="movie_001">
+            </div>
+            <div class="input-group">
+                <label>Event Name:</label>
+                <input type="text" id="eventName" value="Avengers: Endgame">
+            </div>
+            <div class="input-group">
+                <label>Category:</label>
+                <select id="eventCategory" class="form-input">
+                    <option value="Movies">Movies</option>
+                    <option value="Concerts">Concerts</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Plays">Plays</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Venue:</label>
+                <input type="text" id="eventVenue" value="PVR Cinemas">
+            </div>
+            <div class="input-group">
+                <label>Total Tickets:</label>
+                <input type="number" id="eventTickets" value="150">
+            </div>
+            
+            <button class="action-button event" onclick="trackAddEvent()">
+                <i class="fas fa-plus"></i> Add Event
+            </button>
+            <button class="action-button event" onclick="trackSearchEvent()">
+                <i class="fas fa-search"></i> Search Event
+            </button>
+            <button class="action-button event" onclick="trackListCategories()">
+                <i class="fas fa-list"></i> List Categories
+            </button>
+        </div>
+
+        <!-- Booking Actions -->
+        <div class="activity-panel">
+            <h2><i class="fas fa-ticket-alt"></i> Booking System</h2>
+            
+            <div class="input-group">
+                <label>User ID:</label>
+                <input type="text" id="bookingUserId" value="demo@example.com">
+            </div>
+            <div class="input-group">
+                <label>Event ID:</label>
+                <input type="text" id="bookingEventId" value="movie_001">
+            </div>
+            <div class="input-group">
+                <label>Quantity:</label>
+                <input type="number" id="bookingQuantity" value="2">
+            </div>
+            
+            <button class="action-button booking" onclick="trackBookTickets()">
+                <i class="fas fa-shopping-cart"></i> Book Tickets
+            </button>
+            <button class="action-button booking" onclick="trackProcessBooking()">
+                <i class="fas fa-cogs"></i> Process Booking Queue
+            </button>
+            <button class="action-button booking" onclick="trackCancelTickets()">
+                <i class="fas fa-times"></i> Cancel Tickets
+            </button>
+            <button class="action-button booking" onclick="trackProcessCancellation()">
+                <i class="fas fa-undo"></i> Process Cancellation
+            </button>
+        </div>
+
+        <!-- Venue Actions -->
+        <div class="activity-panel">
+            <h2><i class="fas fa-map-marker-alt"></i> Venue System</h2>
+            
+            <div class="input-group">
+                <label>Venue Name:</label>
+                <input type="text" id="venueName" value="Stadium A">
+            </div>
+            <div class="input-group">
+                <label>From Venue:</label>
+                <input type="text" id="fromVenue" value="Stadium A">
+            </div>
+            <div class="input-group">
+                <label>To Venue:</label>
+                <input type="text" id="toVenue" value="Stadium B">
+            </div>
+            <div class="input-group">
+                <label>Distance (km):</label>
+                <input type="number" id="venueDistance" value="5">
+            </div>
+            
+            <button class="action-button venue" onclick="trackAddVenue()">
+                <i class="fas fa-plus"></i> Add Venue
+            </button>
+            <button class="action-button venue" onclick="trackAddPath()">
+                <i class="fas fa-route"></i> Add Path
+            </button>
+            <button class="action-button venue" onclick="trackShortestPath()">
+                <i class="fas fa-directions"></i> Find Shortest Path
+            </button>
+        </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="activity-panel" style="grid-column: 1 / -1;">
+        <h2><i class="fas fa-terminal"></i> Real-time Activity Log</h2>
+        <p>This shows the complete flow from frontend action to C backend function call:</p>
+        
+        <div id="activityLog" class="log-panel">
+            <div class="log-entry log-frontend">🚀 Activity tracker ready. Perform actions above to see the complete flow!</div>
+        </div>
+        
+        <button class="action-button danger" onclick="clearLog()">
+            <i class="fas fa-trash"></i> Clear Log
+        </button>
+        <button class="action-button" onclick="showFlowDiagram()">
+            <i class="fas fa-sitemap"></i> Show Flow Diagram
+        </button>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let activityLog = [];
+
+        function logActivity(layer, message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            activityLog.push({ timestamp, layer, message, type });
+            updateLogDisplay();
+        }
+
+        function updateLogDisplay() {
+            const container = document.getElementById('activityLog');
+            const html = activityLog.slice(-30).map(entry => {
+                const className = `log-entry log-${entry.layer}`;
+                const layerIcon = {
+                    'frontend': '🖥️',
+                    'api': '🔗',
+                    'flask': '🐍',
+                    'python': '🔧',
+                    'c': '⚡',
+                    'error': '❌'
+                };
+                const icon = layerIcon[entry.layer] || '📝';
+                return `<div class="${className}">${icon} [${entry.timestamp}] [${entry.layer.toUpperCase()}] ${entry.message}</div>`;
+            }).join('');
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearLog() {
+            activityLog = [];
+            updateLogDisplay();
+            logActivity('frontend', 'Activity log cleared', 'info');
+        }
+
+        function showFlowDiagram() {
+            logActivity('frontend', '📊 FLOW DIAGRAM:', 'info');
+            logActivity('frontend', '1. User clicks button in browser', 'info');
+            logActivity('api', '2. JavaScript calls ehApi.function()', 'info');
+            logActivity('flask', '3. Flask receives HTTP request at /endpoint', 'info');
+            logActivity('python', '4. Python calls eh.method() via CFFI bindings', 'info');
+            logActivity('c', '5. C function executes in eventhub.c', 'info');
+            logActivity('c', '6. C function prints log to terminal', 'info');
+            logActivity('python', '7. Python returns result to Flask', 'info');
+            logActivity('flask', '8. Flask sends JSON response', 'info');
+            logActivity('api', '9. JavaScript receives response', 'info');
+            logActivity('frontend', '10. Frontend updates UI', 'info');
+        }
+
+        // User Management Tracking
+        async function trackUserRegistration() {
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            
+            logActivity('frontend', `User clicked "Register User" for ${email}`, 'info');
+            logActivity('api', 'Calling ehApi.register(email, password)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /signup', 'info');
+            logActivity('python', 'Expected Python call: eh.register_user(user_id, password_hash)', 'info');
+            logActivity('c', 'Expected C function: eh_register_user() → Hash Table Insert', 'info');
+            
+            try {
+                const result = await ehApi.register(email, password);
+                if (result.ok) {
+                    logActivity('c', `✅ C Backend: User ${email} registered in hash table`, 'info');
+                    logActivity('frontend', '✅ Registration successful - check terminal for C logs!', 'info');
+                } else {
+                    logActivity('error', 'Registration failed - user may already exist', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Registration error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackUserLogin() {
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            
+            logActivity('frontend', `User clicked "Login User" for ${email}`, 'info');
+            logActivity('api', 'Calling ehApi.login(email, password)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /login', 'info');
+            logActivity('python', 'Expected Python call: eh.login_user(user_id, password_hash)', 'info');
+            logActivity('c', 'Expected C function: eh_login_user() → Hash Table Lookup', 'info');
+            
+            try {
+                const result = await ehApi.login(email, password);
+                if (result.ok) {
+                    logActivity('c', `✅ C Backend: User ${email} authenticated via hash table`, 'info');
+                    logActivity('frontend', '✅ Login successful - check terminal for C logs!', 'info');
+                } else {
+                    logActivity('error', 'Login failed - invalid credentials', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Login error: ${error.message}`, 'error');
+            }
+        }
+
+        // Event Management Tracking
+        async function trackAddEvent() {
+            const eventData = {
+                id: document.getElementById('eventId').value,
+                name: document.getElementById('eventName').value,
+                category: document.getElementById('eventCategory').value,
+                venue: document.getElementById('eventVenue').value,
+                total_tickets: parseInt(document.getElementById('eventTickets').value)
+            };
+            
+            logActivity('frontend', `User clicked "Add Event" for ${eventData.name}`, 'info');
+            logActivity('api', 'Calling ehApi.addEvent(eventData)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /events', 'info');
+            logActivity('python', 'Expected Python call: eh.add_event(id, name, category, venue, total)', 'info');
+            logActivity('c', 'Expected C function: eh_add_event() → Hash Table + Category Tree Insert', 'info');
+            
+            try {
+                const result = await ehApi.addEvent(eventData);
+                if (result.ok) {
+                    logActivity('c', `✅ C Backend: Event ${eventData.id} added to hash table and category tree`, 'info');
+                    logActivity('frontend', '✅ Event added successfully - check terminal for C logs!', 'info');
+                } else {
+                    logActivity('error', 'Add event failed - invalid category or duplicate ID', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Add event error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackSearchEvent() {
+            const eventId = document.getElementById('eventId').value;
+            
+            logActivity('frontend', `User clicked "Search Event" for ${eventId}`, 'info');
+            logActivity('api', 'Calling ehApi.getEvent(eventId)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: GET /event/{id}', 'info');
+            logActivity('python', 'Expected Python call: eh.search_event_json(event_id)', 'info');
+            logActivity('c', 'Expected C function: eh_search_event() → Hash Table Lookup', 'info');
+            
+            try {
+                const result = await ehApi.getEvent(eventId);
+                if (result) {
+                    logActivity('c', `✅ C Backend: Event ${eventId} found in hash table`, 'info');
+                    logActivity('frontend', `✅ Event found: ${JSON.stringify(result)} - check terminal for C logs!`, 'info');
+                } else {
+                    logActivity('error', 'Event not found in hash table', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Search event error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackListCategories() {
+            logActivity('frontend', 'User clicked "List Categories"', 'info');
+            logActivity('api', 'Calling ehApi.listCategories()', 'info');
+            logActivity('flask', 'Expected Flask endpoint: GET /categories', 'info');
+            logActivity('python', 'Expected Python call: eh.list_categories_json()', 'info');
+            logActivity('c', 'Expected C function: eh_list_categories_tree() → Category Tree Traversal', 'info');
+            
+            try {
+                const result = await ehApi.listCategories();
+                if (result) {
+                    logActivity('c', '✅ C Backend: Category tree traversed and JSON generated', 'info');
+                    logActivity('frontend', `✅ Categories retrieved - check terminal for C logs!`, 'info');
+                } else {
+                    logActivity('error', 'Failed to get categories', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `List categories error: ${error.message}`, 'error');
+            }
+        }
+
+        // Booking System Tracking
+        async function trackBookTickets() {
+            const userId = document.getElementById('bookingUserId').value;
+            const eventId = document.getElementById('bookingEventId').value;
+            const quantity = parseInt(document.getElementById('bookingQuantity').value);
+            
+            logActivity('frontend', `User clicked "Book Tickets" - ${quantity} tickets for ${eventId}`, 'info');
+            logActivity('api', 'Calling ehApi.book(userId, eventId, quantity)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /book', 'info');
+            logActivity('python', 'Expected Python call: eh.book(user_id, event_id, quantity)', 'info');
+            logActivity('c', 'Expected C function: eh_book_tickets() → Queue Enqueue Operation', 'info');
+            
+            try {
+                const result = await ehApi.book(userId, eventId, quantity);
+                if (result.ok) {
+                    logActivity('c', `✅ C Backend: Booking request queued for ${userId} - ${quantity} tickets for ${eventId}`, 'info');
+                    logActivity('frontend', '✅ Booking queued successfully - check terminal for C logs!', 'info');
+                } else {
+                    logActivity('error', 'Booking failed - invalid parameters', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Book tickets error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackProcessBooking() {
+            logActivity('frontend', 'User clicked "Process Booking Queue"', 'info');
+            logActivity('api', 'Calling ehApi.processBooking()', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /book/process', 'info');
+            logActivity('python', 'Expected Python call: eh.process_next_booking_json()', 'info');
+            logActivity('c', 'Expected C function: eh_process_next_booking() → Queue Dequeue + Seat Allocation', 'info');
+            
+            try {
+                const result = await ehApi.processBooking();
+                if (result.status) {
+                    logActivity('c', `✅ C Backend: Booking processed from queue - Status: ${result.status}`, 'info');
+                    logActivity('frontend', `✅ Booking processed: ${JSON.stringify(result)} - check terminal for C logs!`, 'info');
+                } else {
+                    logActivity('error', 'No bookings to process or processing failed', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Process booking error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackCancelTickets() {
+            const userId = document.getElementById('bookingUserId').value;
+            const eventId = document.getElementById('bookingEventId').value;
+            const quantity = parseInt(document.getElementById('bookingQuantity').value);
+            
+            logActivity('frontend', `User clicked "Cancel Tickets" - ${quantity} tickets for ${eventId}`, 'info');
+            logActivity('api', 'Calling ehApi.cancel(userId, eventId, quantity)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /cancel', 'info');
+            logActivity('python', 'Expected Python call: eh.cancel(user_id, event_id, quantity)', 'info');
+            logActivity('c', 'Expected C function: eh_cancel_tickets() → Stack Push Operation', 'info');
+            
+            try {
+                const result = await ehApi.cancel(userId, eventId, quantity);
+                if (result.ok) {
+                    logActivity('c', `✅ C Backend: Cancellation request pushed to stack for ${userId}`, 'info');
+                    logActivity('frontend', '✅ Cancellation queued successfully - check terminal for C logs!', 'info');
+                } else {
+                    logActivity('error', 'Cancellation failed - invalid parameters', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Cancel tickets error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackProcessCancellation() {
+            logActivity('frontend', 'User clicked "Process Cancellation"', 'info');
+            logActivity('api', 'Calling ehApi.processCancellation()', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /cancel/process', 'info');
+            logActivity('python', 'Expected Python call: eh.process_last_cancellation_json()', 'info');
+            logActivity('c', 'Expected C function: eh_process_last_cancellation() → Stack Pop + Seat Release', 'info');
+            
+            try {
+                const result = await ehApi.processCancellation();
+                if (result.status) {
+                    logActivity('c', `✅ C Backend: Cancellation processed from stack - Status: ${result.status}`, 'info');
+                    logActivity('frontend', `✅ Cancellation processed: ${JSON.stringify(result)} - check terminal for C logs!`, 'info');
+                } else {
+                    logActivity('error', 'No cancellations to process', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Process cancellation error: ${error.message}`, 'error');
+            }
+        }
+
+        // Venue System Tracking
+        async function trackAddVenue() {
+            const venueName = document.getElementById('venueName').value;
+            
+            logActivity('frontend', `User clicked "Add Venue" for ${venueName}`, 'info');
+            logActivity('api', 'Calling ehApi.addVenue(venueName)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /venues', 'info');
+            logActivity('python', 'Expected Python call: eh.add_venue(name)', 'info');
+            logActivity('c', 'Expected C function: eh_add_venue() → Graph Node Addition', 'info');
+            
+            try {
+                const result = await ehApi.addVenue(venueName);
+                if (result.ok) {
+                    logActivity('c', `✅ C Backend: Venue ${venueName} added to graph`, 'info');
+                    logActivity('frontend', '✅ Venue added successfully - check terminal for C logs!', 'info');
+                } else {
+                    logActivity('error', 'Add venue failed', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Add venue error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackAddPath() {
+            const from = document.getElementById('fromVenue').value;
+            const to = document.getElementById('toVenue').value;
+            const distance = parseInt(document.getElementById('venueDistance').value);
+            
+            logActivity('frontend', `User clicked "Add Path" from ${from} to ${to} (${distance}km)`, 'info');
+            logActivity('api', 'Calling ehApi.addPath(from, to, distance)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: POST /paths', 'info');
+            logActivity('python', 'Expected Python call: eh.add_path(from, to, distance)', 'info');
+            logActivity('c', 'Expected C function: eh_add_path() → Graph Edge Addition (Undirected)', 'info');
+            
+            try {
+                const result = await ehApi.addPath(from, to, distance);
+                if (result.ok) {
+                    logActivity('c', `✅ C Backend: Path added to graph between ${from} and ${to}`, 'info');
+                    logActivity('frontend', '✅ Path added successfully - check terminal for C logs!', 'info');
+                } else {
+                    logActivity('error', 'Add path failed', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Add path error: ${error.message}`, 'error');
+            }
+        }
+
+        async function trackShortestPath() {
+            const from = document.getElementById('fromVenue').value;
+            const to = document.getElementById('toVenue').value;
+            
+            logActivity('frontend', `User clicked "Find Shortest Path" from ${from} to ${to}`, 'info');
+            logActivity('api', 'Calling ehApi.shortest(from, to)', 'info');
+            logActivity('flask', 'Expected Flask endpoint: GET /venues/shortest', 'info');
+            logActivity('python', 'Expected Python call: eh.shortest_path_json(from, to)', 'info');
+            logActivity('c', 'Expected C function: eh_shortest_path() → Dijkstra\'s Algorithm Execution', 'info');
+            
+            try {
+                const result = await ehApi.shortest(from, to);
+                if (result && result.distance !== undefined) {
+                    logActivity('c', `✅ C Backend: Dijkstra's algorithm found path - Distance: ${result.distance}km`, 'info');
+                    logActivity('frontend', `✅ Shortest path found: ${result.distance}km via ${result.path?.join(' → ')} - check terminal for C logs!`, 'info');
+                } else {
+                    logActivity('error', 'No path found between venues', 'error');
+                }
+            } catch (error) {
+                logActivity('error', `Shortest path error: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            logActivity('frontend', '🚀 Frontend → Backend Activity Tracker loaded', 'info');
+            logActivity('frontend', '💡 Perform actions above to see which eventhub.c functions are called', 'info');
+            logActivity('frontend', '🖥️ Watch your terminal for C backend logs like:', 'info');
+            logActivity('c', '[USERS] register user_id=demo@example.com', 'info');
+            logActivity('c', '[QUEUE] book_tickets enqueue user=demo@example.com event=movie_001 qty=2', 'info');
+            logActivity('c', '[GRAPH] add_venue name=Stadium A', 'info');
+        });
+    </script>
+</body>
+</html>

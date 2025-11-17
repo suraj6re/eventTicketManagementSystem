@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+     Navigation 
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><a href="index.html">Event Hub</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Movies</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Sports</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Plays</a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link" id="profileNavLink">Profile</a>
+                </li>
+                <li class="nav-item" id="logoutNavItem" style="display: none;">
+                    <a href="#" class="nav-link" onclick="authSystem.logout()">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+     Login Required Message (shown if not authenticated) 
+    <div id="loginRequired" class="auth-section" style="display: none;">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Login Required</h2>
+                    <p>Please log in to select seats and book tickets</p>
+                </div>
+                <div class="auth-actions">
+                    <a href="login.html" class="btn-primary auth-btn">Go to Login</a>
+                    <a href="index.html" class="btn-secondary auth-btn">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     Seat Selection Content (shown if authenticated) 
+    <div id="seatSelectionContent" style="display: none;">
+         Breadcrumb 
+        <section class="breadcrumb-section">
+            <div class="container">
+                <nav class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="events.html">Events</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="#" id="eventBreadcrumb">Event Details</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Select Seats</span>
+                </nav>
+            </div>
+        </section>
+
+         Event Info Header 
+        <section class="seat-selection-header">
+            <div class="container">
+                <div class="event-summary" id="eventSummary">
+                     Event summary will be populated by JavaScript 
+                </div>
+            </div>
+        </section>
+
+         Seat Selection Section 
+        <section class="seat-selection-section">
+            <div class="container">
+                <div class="seat-selection-container">
+                    <div class="seat-map-container">
+                        <div class="screen-indicator">
+                            <div class="screen">
+                                <i class="fas fa-tv"></i>
+                                <span>SCREEN</span>
+                            </div>
+                        </div>
+                        
+                        <div class="seat-legend">
+                            <div class="legend-item">
+                                <div class="seat-demo available"></div>
+                                <span>Available</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat-demo selected"></div>
+                                <span>Selected</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat-demo occupied"></div>
+                                <span>Occupied</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat-demo premium"></div>
+                                <span>Premium</span>
+                            </div>
+                        </div>
+
+                        <div class="seat-map" id="seatMap">
+                             Seat map will be generated by JavaScript 
+                        </div>
+
+                        <div class="seat-selection-info">
+                            <p><i class="fas fa-info-circle"></i> Click on seats to select/deselect. Maximum 10 seats can be selected.</p>
+                        </div>
+                    </div>
+
+                    <div class="booking-summary-sidebar">
+                        <div class="booking-summary-card">
+                            <h3>Booking Summary</h3>
+                            
+                            <div class="selected-seats-info" id="selectedSeatsInfo">
+                                <div class="no-seats-selected">
+                                    <i class="fas fa-chair"></i>
+                                    <p>No seats selected</p>
+                                    <small>Please select seats to continue</small>
+                                </div>
+                            </div>
+
+                            <div class="price-breakdown" id="priceBreakdown" style="display: none;">
+                                <div class="price-row">
+                                    <span>Regular Seats (<span id="regularCount">0</span>)</span>
+                                    <span>₹<span id="regularTotal">0</span></span>
+                                </div>
+                                <div class="price-row">
+                                    <span>Premium Seats (<span id="premiumCount">0</span>)</span>
+                                    <span>₹<span id="premiumTotal">0</span></span>
+                                </div>
+                                <div class="price-row">
+                                    <span>Convenience Fee</span>
+                                    <span>₹<span id="convenienceFee">0</span></span>
+                                </div>
+                                <div class="price-row">
+                                    <span>GST (18%)</span>
+                                    <span>₹<span id="gstAmount">0</span></span>
+                                </div>
+                                <div class="price-row total">
+                                    <span>Total Amount</span>
+                                    <span>₹<span id="totalAmount">0</span></span>
+                                </div>
+                            </div>
+
+                            <div class="booking-actions">
+                                <button class="btn-primary" id="proceedBtn" onclick="proceedToPayment()" disabled>
+                                    Proceed to Payment
+                                </button>
+                                <button class="btn-secondary" onclick="goBack()">
+                                    <i class="fas fa-arrow-left"></i> Back to Event
+                                </button>
+                            </div>
+
+                            <div class="booking-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Secure Booking</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <span>Mobile Tickets</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Instant Confirmation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+     Footer 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Event Hub</h3>
+                    <p>Your ultimate destination for entertainment booking</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="events.html">Movies</a></li>
+                        <li><a href="events.html">Concerts</a></li>
+                        <li><a href="events.html">Sports</a></li>
+                        <li><a href="events.html">Plays</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Event Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="seat-selection.js"></script>
+</body>
+</html>

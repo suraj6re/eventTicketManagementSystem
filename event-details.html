@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="image-utils.js"></script>
+</head>
+<body>
+     Navigation 
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <i class="fas fa-calendar-star"></i>
+                    Event Hub
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="profile.html" id="profileNavLink" style="display: none;">Profile</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a></li>
+                <li id="logoutNavItem" style="display: none;">
+                    <a href="#" onclick="authSystem.logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+     Breadcrumb 
+    <section class="breadcrumb-section">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="events.html">Events</a>
+                <i class="fas fa-chevron-right"></i>
+                <span id="breadcrumbTitle">Event Details</span>
+            </nav>
+        </div>
+    </section>
+
+     Event Details Content 
+    <section class="event-details-section">
+        <div class="container">
+            <div class="event-details-container" id="eventDetailsContainer">
+                 Content will be populated by JavaScript 
+            </div>
+        </div>
+    </section>
+
+     Related Events 
+    <section class="related-events-section">
+        <div class="container">
+            <h2 class="section-title">You Might Also Like</h2>
+            <div class="related-events-grid" id="relatedEventsGrid">
+                 Related events will be populated by JavaScript 
+            </div>
+        </div>
+    </section>
+
+     Booking Modal 
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select Booking Option</h3>
+                <button class="modal-close" onclick="closeBookingModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="booking-options">
+                    <div class="booking-option" onclick="selectSeats()">
+                        <div class="option-icon">
+                            <i class="fas fa-chair"></i>
+                        </div>
+                        <div class="option-content">
+                            <h4>Book Tickets</h4>
+                            <p>Choose your preferred seats from the seat map</p>
+                            <span class="option-badge">Recommended</span>
+                        </div>
+                        <div class="option-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-option" onclick="addToBookingCart()">
+                        <div class="option-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="option-content">
+                            <h4>Add to Booking Cart</h4>
+                            <p>Save for later and book multiple events together</p>
+                        </div>
+                        <div class="option-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-booking-section" id="quickBookingSection" style="display: none;">
+                    <div class="ticket-selection">
+                        <div class="ticket-type">
+                            <div class="ticket-info">
+                                <h4>General Admission</h4>
+                                <p class="ticket-price">₹<span id="ticketPrice">350</span></p>
+                            </div>
+                            <div class="quantity-selector">
+                                <button class="quantity-btn" onclick="changeQuantity(-1)">-</button>
+                                <span class="quantity" id="ticketQuantity">1</span>
+                                <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-summary">
+                        <div class="summary-row">
+                            <span>Tickets (<span id="summaryQuantity">1</span>)</span>
+                            <span>₹<span id="summarySubtotal">350</span></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Convenience Fee</span>
+                            <span>₹<span id="convenienceFee">50</span></span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total Amount</span>
+                            <span>₹<span id="totalAmount">400</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <button class="btn-secondary" onclick="closeBookingModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+     Footer 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Event Hub</h3>
+                    <p>Your ultimate destination for entertainment booking</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="events.html">Browse Events</a></li>
+                        <li><a href="cart.html">Booking Cart</a></li>
+                        <li><a href="login.html">Login / Sign up</a></li>
+                        <li><a href="profile.html">My Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="events.html">Movies</a></li>
+                        <li><a href="events.html">Concerts</a></li>
+                        <li><a href="events.html">Sports</a></li>
+                        <li><a href="events.html">Plays</a></li>
+                    </ul>
+                </div>
+                <!-- Social links removed per UX (non-functional) -->
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Event Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="cart-module.js"></script>
+    <script src="script.js"></script>
+    <script src="events.js"></script>
+    <script src="event-details.js"></script>
+</body>
+</html>

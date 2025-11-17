@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub Function Tracker</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 20px;
+        }
+        .terminal {
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .timestamp {
+            color: #888;
+        }
+        .function-name {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        .data-structure {
+            color: #ff6600;
+        }
+        .user-action {
+            color: #00ffff;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .control-group {
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .control-group h3 {
+            margin: 0 0 15px 0;
+            color: #00ff00;
+            font-size: 16px;
+        }
+        button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        input, select {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #555;
+            padding: 5px;
+            margin: 2px;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        .clear-btn {
+            background: #ff3333;
+            border-color: #ff3333;
+            color: white;
+        }
+        .clear-btn:hover {
+            background: #ff6666;
+        }
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 EventHub.c Function Tracker</h1>
+            <p>Real-time monitoring of C function calls triggered by frontend activities</p>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ffff00;"></div>
+                <span>C Functions</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff6600;"></div>
+                <span>Data Structures</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #00ffff;"></div>
+                <span>User Actions</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #888;"></div>
+                <span>Timestamps</span>
+            </div>
+        </div>
+
+        <div class="terminal" id="terminal">
+            <div class="log-entry">
+                <span class="timestamp">[SYSTEM]</span> 
+                <span class="function-name">eh_init()</span> called - 
+                <span class="data-structure">HashTable, BST, Queue, Stack, Graph</span> initialized
+            </div>
+            <div class="log-entry">
+                <span class="timestamp">[READY]</span> EventHub Function Tracker is monitoring...
+            </div>
+        </div>
+
+        <div class="controls">
+            <!-- User Management -->
+            <div class="control-group">
+                <h3>👤 User Management</h3>
+                <input type="text" id="userId" placeholder="User ID" value="user123">
+                <input type="password" id="password" placeholder="Password" value="pass123">
+                <button onclick="registerUser()">Register User</button>
+                <button onclick="loginUser()">Login User</button>
+            </div>
+
+            <!-- Event Management -->
+            <div class="control-group">
+                <h3>🎭 Event Management</h3>
+                <input type="text" id="eventId" placeholder="Event ID" value="E001">
+                <input type="text" id="eventName" placeholder="Event Name" value="Inception">
+                <select id="eventCategory">
+                    <option value="Movies">Movies</option>
+                    <option value="Concerts">Concerts</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Plays">Plays</option>
+                </select>
+                <input type="text" id="venue" placeholder="Venue" value="Cinema Hall">
+                <input type="number" id="totalTickets" placeholder="Total Tickets" value="100">
+                <button onclick="addEvent()">Add Event</button>
+                <button onclick="searchEvent()">Search Event</button>
+                <button onclick="deleteEvent()">Delete Event</button>
+                <button onclick="listCategories()">List Categories</button>
+            </div>
+
+            <!-- Booking System -->
+            <div class="control-group">
+                <h3>🎫 Booking System</h3>
+                <input type="text" id="bookUserId" placeholder="User ID" value="user123">
+                <input type="text" id="bookEventId" placeholder="Event ID" value="E001">
+                <input type="number" id="quantity" placeholder="Quantity" value="2">
+                <button onclick="bookTickets()">Book Tickets</button>
+                <button onclick="processBooking()">Process Next Booking</button>
+                <button onclick="cancelTickets()">Cancel Tickets</button>
+                <button onclick="processCancellation()">Process Last Cancellation</button>
+            </div>
+
+            <!-- Venue Graph -->
+            <div class="control-group">
+                <h3>🗺️ Venue Graph</h3>
+                <input type="text" id="venueName" placeholder="Venue Name" value="Stadium A">
+                <input type="text" id="fromVenue" placeholder="From Venue" value="Stadium A">
+                <input type="text" id="toVenue" placeholder="To Venue" value="Stadium B">
+                <input type="number" id="distance" placeholder="Distance" value="5">
+                <button onclick="addVenue()">Add Venue</button>
+                <button onclick="addPath()">Add Path</button>
+                <button onclick="findShortestPath()">Find Shortest Path</button>
+            </div>
+
+            <!-- System Controls -->
+            <div class="control-group">
+                <h3>⚙️ System Controls</h3>
+                <button class="clear-btn" onclick="clearTerminal()">Clear Terminal</button>
+                <button onclick="simulateUserFlow()">Simulate User Flow</button>
+                <button onclick="stressTest()">Stress Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        let logCount = 0;
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            terminal.appendChild(logEntry);
+            terminal.scrollTop = terminal.scrollHeight;
+            logCount++;
+        }
+
+        function logFunctionCall(action, cFunction, dataStructure, details = '') {
+            const message = `
+                <span class="user-action">${action}</span> → 
+                <span class="function-name">${cFunction}</span> → 
+                <span class="data-structure">${dataStructure}</span>
+                ${details ? ` (${details})` : ''}
+            `;
+            addLog(message);
+        }
+
+        // API call wrapper that logs function calls
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (data) options.body = JSON.stringify(data);
+                
+                const response = await fetch(endpoint, options);
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                addLog(`❌ API Error: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        // User Management Functions
+        async function registerUser() {
+            const userId = document.getElementById('userId').value;
+            const password = document.getElementById('password').value;
+            
+            logFunctionCall('REGISTER_USER', 'eh_register_user()', 'HashTable', `user_id=${userId}`);
+            
+            const result = await apiCall('/signup', 'POST', {
+                email: userId,
+                password: password
+            });
+            
+            if (result && result.ok) {
+                addLog(`✅ User registered successfully: ${userId}`);
+            } else {
+                addLog(`❌ Registration failed for: ${userId}`);
+            }
+        }
+
+        async function loginUser() {
+            const userId = document.getElementById('userId').value;
+            const password = document.getElementById('password').value;
+            
+            logFunctionCall('LOGIN_USER', 'eh_login_user()', 'HashTable', `user_id=${userId}`);
+            
+            const result = await apiCall('/login', 'POST', {
+                email: userId,
+                password: password
+            });
+            
+            if (result && result.ok) {
+                addLog(`✅ Login successful: ${userId}`);
+            } else {
+                addLog(`❌ Login failed for: ${userId}`);
+            }
+        }
+
+        // Event Management Functions
+        async function addEvent() {
+            const eventId = document.getElementById('eventId').value;
+            const eventName = document.getElementById('eventName').value;
+            const category = document.getElementById('eventCategory').value;
+            const venue = document.getElementById('venue').value;
+            const total = document.getElementById('totalTickets').value;
+            
+            logFunctionCall('ADD_EVENT', 'eh_add_event()', 'HashTable + BST', 
+                `id=${eventId}, name=${eventName}, category=${category}`);
+            
+            const result = await apiCall('/events', 'POST', {
+                id: eventId,
+                name: eventName,
+                category: category,
+                venue: venue,
+                total: parseInt(total)
+            });
+            
+            if (result && result.ok) {
+                addLog(`✅ Event added: ${eventName} (${eventId})`);
+            } else {
+                addLog(`❌ Failed to add event: ${eventName}`);
+            }
+        }
+
+        async function searchEvent() {
+            const eventId = document.getElementById('eventId').value;
+            
+            logFunctionCall('SEARCH_EVENT', 'eh_search_event()', 'HashTable', `event_id=${eventId}`);
+            
+            const result = await apiCall(`/event/${eventId}`);
+            
+            if (result && !result.error) {
+                addLog(`✅ Event found: ${result.name || 'Event data'}`);
+            } else {
+                addLog(`❌ Event not found: ${eventId}`);
+            }
+        }
+
+        async function deleteEvent() {
+            const eventId = document.getElementById('eventId').value;
+            
+            logFunctionCall('DELETE_EVENT', 'eh_delete_event()', 'HashTable + BST', `event_id=${eventId}`);
+            
+            const result = await apiCall(`/events/${eventId}`, 'DELETE');
+            
+            if (result && result.ok) {
+                addLog(`✅ Event deleted: ${eventId}`);
+            } else {
+                addLog(`❌ Failed to delete event: ${eventId}`);
+            }
+        }
+
+        async function listCategories() {
+            logFunctionCall('LIST_CATEGORIES', 'eh_list_categories_tree()', 'BST + Tree', 'category traversal');
+            
+            const result = await apiCall('/categories');
+            
+            if (result) {
+                addLog(`✅ Categories retrieved: ${Array.isArray(result) ? result.length : 'data'} categories`);
+            } else {
+                addLog(`❌ Failed to retrieve categories`);
+            }
+        }
+
+        // Booking System Functions
+        async function bookTickets() {
+            const userId = document.getElementById('bookUserId').value;
+            const eventId = document.getElementById('bookEventId').value;
+            const qty = document.getElementById('quantity').value;
+            
+            logFunctionCall('BOOK_TICKETS', 'eh_book_tickets()', 'Queue', 
+                `user=${userId}, event=${eventId}, qty=${qty}`);
+            
+            const result = await apiCall('/book', 'POST', {
+                user_id: userId,
+                event_id: eventId,
+                quantity: parseInt(qty)
+            });
+            
+            if (result && result.ok) {
+                addLog(`✅ Booking queued: ${qty} tickets for ${eventId}`);
+            } else {
+                addLog(`❌ Booking failed for event: ${eventId}`);
+            }
+        }
+
+        async function processBooking() {
+            logFunctionCall('PROCESS_BOOKING', 'eh_process_next_booking()', 'Queue (FIFO)', 'dequeue + ticket allocation');
+            
+            const result = await apiCall('/book/process', 'POST');
+            
+            if (result) {
+                if (result.status === 'ok') {
+                    addLog(`✅ Booking processed: ${result.user} got ${result.quantity} tickets for ${result.event}`);
+                } else if (result.status === 'empty') {
+                    addLog(`ℹ️ No bookings in queue to process`);
+                } else {
+                    addLog(`❌ Booking processing failed: ${result.reason || 'unknown error'}`);
+                }
+            }
+        }
+
+        async function cancelTickets() {
+            const userId = document.getElementById('bookUserId').value;
+            const eventId = document.getElementById('bookEventId').value;
+            const qty = document.getElementById('quantity').value;
+            
+            logFunctionCall('CANCEL_TICKETS', 'eh_cancel_tickets()', 'Stack', 
+                `user=${userId}, event=${eventId}, qty=${qty}`);
+            
+            const result = await apiCall('/cancel', 'POST', {
+                user_id: userId,
+                event_id: eventId,
+                quantity: parseInt(qty)
+            });
+            
+            if (result && result.ok) {
+                addLog(`✅ Cancellation stacked: ${qty} tickets for ${eventId}`);
+            } else {
+                addLog(`❌ Cancellation failed for event: ${eventId}`);
+            }
+        }
+
+        async function processCancellation() {
+            logFunctionCall('PROCESS_CANCELLATION', 'eh_process_last_cancellation()', 'Stack (LIFO)', 'pop + ticket return');
+            
+            const result = await apiCall('/cancel/process', 'POST');
+            
+            if (result) {
+                if (result.status === 'ok') {
+                    addLog(`✅ Cancellation processed: ${result.quantity} tickets returned for ${result.event}`);
+                } else if (result.status === 'empty') {
+                    addLog(`ℹ️ No cancellations in stack to process`);
+                } else {
+                    addLog(`❌ Cancellation processing failed: ${result.reason || 'unknown error'}`);
+                }
+            }
+        }
+
+        // Venue Graph Functions
+        async function addVenue() {
+            const venueName = document.getElementById('venueName').value;
+            
+            logFunctionCall('ADD_VENUE', 'eh_add_venue()', 'Graph (Node)', `venue=${venueName}`);
+            
+            const result = await apiCall('/venues', 'POST', {
+                name: venueName
+            });
+            
+            if (result && result.ok) {
+                addLog(`✅ Venue added to graph: ${venueName}`);
+            } else {
+                addLog(`❌ Failed to add venue: ${venueName}`);
+            }
+        }
+
+        async function addPath() {
+            const fromVenue = document.getElementById('fromVenue').value;
+            const toVenue = document.getElementById('toVenue').value;
+            const distance = document.getElementById('distance').value;
+            
+            logFunctionCall('ADD_PATH', 'eh_add_path()', 'Graph (Edge)', 
+                `${fromVenue} → ${toVenue}, distance=${distance}`);
+            
+            const result = await apiCall('/paths', 'POST', {
+                from: fromVenue,
+                to: toVenue,
+                distance: parseInt(distance)
+            });
+            
+            if (result && result.ok) {
+                addLog(`✅ Path added: ${fromVenue} ↔ ${toVenue} (${distance})`);
+            } else {
+                addLog(`❌ Failed to add path between venues`);
+            }
+        }
+
+        async function findShortestPath() {
+            const fromVenue = document.getElementById('fromVenue').value;
+            const toVenue = document.getElementById('toVenue').value;
+            
+            logFunctionCall('SHORTEST_PATH', 'eh_shortest_path()', 'Graph + Dijkstra', 
+                `${fromVenue} → ${toVenue}`);
+            
+            const result = await apiCall(`/venues/shortest?from=${fromVenue}&to=${toVenue}`);
+            
+            if (result && result.from) {
+                addLog(`✅ Shortest path found: distance=${result.distance}, path=[${result.path.join(' → ')}]`);
+            } else {
+                addLog(`❌ No path found between ${fromVenue} and ${toVenue}`);
+            }
+        }
+
+        // Utility Functions
+        function clearTerminal() {
+            terminal.innerHTML = `
+                <div class="log-entry">
+                    <span class="timestamp">[CLEARED]</span> Terminal cleared - EventHub still running
+                </div>
+            `;
+            logCount = 0;
+        }
+
+        async function simulateUserFlow() {
+            addLog(`🔄 Starting user flow simulation...`);
+            
+            // Simulate a complete user journey
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await registerUser();
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await loginUser();
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await addEvent();
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await searchEvent();
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await bookTickets();
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await processBooking();
+            
+            addLog(`✅ User flow simulation completed`);
+        }
+
+        async function stressTest() {
+            addLog(`⚡ Starting stress test...`);
+            
+            // Add multiple events quickly
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById('eventId').value = `STRESS_${i}`;
+                document.getElementById('eventName').value = `Stress Event ${i}`;
+                await addEvent();
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // Book multiple tickets
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById('bookEventId').value = `STRESS_${i}`;
+                document.getElementById('quantity').value = i;
+                await bookTickets();
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // Process all bookings
+            for (let i = 1; i <= 3; i++) {
+                await processBooking();
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            addLog(`✅ Stress test completed`);
+        }
+
+        // Initialize with some sample data
+        window.onload = function() {
+            addLog(`🚀 EventHub Function Tracker initialized`);
+            addLog(`📊 Monitoring C function calls from frontend activities`);
+        };
+    </script>
+</body>
+</html>

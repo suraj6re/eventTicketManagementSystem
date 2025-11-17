@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo"><h2><a href="index.html">Event Hub</a></h2></div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/movies" class="nav-link">Movies</a></li>
+                <li class="nav-item"><a href="/events" class="nav-link">Events</a></li>
+                <li class="nav-item"><a href="/sports" class="nav-link active">Sports</a></li>
+                <li class="nav-item"><a href="/play" class="nav-link">Play</a></li>
+                <li class="nav-item"><a href="cart.html" class="nav-link cart-link"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a></li>
+            </ul>
+            <div class="hamburger"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+        </div>
+    </nav>
+
+    <section class="events-section">
+        <div class="container">
+            <div class="events-header">
+                <h2 class="section-title">Sports</h2>
+            </div>
+            <div class="events-grid" id="categoryGrid"></div>
+        </div>
+    </section>
+
+    <script>
+    const grid = document.getElementById('categoryGrid');
+    function placeholderCard(){
+      return `<div class="event-card"><img src="/static/images/sports.svg" class="event-image" style="width:100%;height:200px;object-fit:cover;border-radius:12px;"><div class="event-info"><div class="event-content"><span class="event-category">sports</span><h3 class="event-title">Sample Sport</h3><div class="event-details"><div class="event-detail"><i class="fas fa-calendar"></i><span>2025-02-01</span></div><div class="event-detail"><i class="fas fa-map-marker-alt"></i><span>Sample Venue</span></div><div class="event-detail"><i class="fas fa-ticket-alt"></i><span>10/10 seats available</span></div></div></div><div class="event-actions"><a class="btn-secondary">Book Now</a></div></div></div>`
+    }
+    function addPlaceholder(n=9){ grid.innerHTML = Array.from({length:n}).map(placeholderCard).join(''); }
+    function render(items){
+      grid.innerHTML = items.map(e=>{
+        const img = e.image_url || '/static/images/sports.svg';
+        return `<div class="event-card" onclick="location.href='event-details.html?id=${e.id}'"><img src="${img}" alt="${e.name}" class="event-image" style="width:100%;height:200px;object-fit:cover;border-radius:12px;"><div class="event-info"><div class="event-content"><span class="event-category">${e.category}</span><h3 class="event-title">${e.name}</h3><div class="event-details"><div class="event-detail"><i class="fas fa-calendar"></i><span>${e.date}</span></div><div class="event-detail"><i class="fas fa-map-marker-alt"></i><span>${e.venue}</span></div><div class="event-detail"><i class="fas fa-ticket-alt"></i><span>${e.available_seats}</span></div></div></div><div class="event-actions"><a class="btn-secondary">Book Now</a></div></div></div>`
+      }).join('')
+    }
+    (async()=>{ addPlaceholder(9); try{ const r = await fetch('/events/sports'); if(r.ok){ const d=await r.json(); if(d?.length) render(d);} }catch{} })();
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</body>
+</html>
+
+

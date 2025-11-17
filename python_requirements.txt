@@ -1,0 +1,24 @@
+# Core Flask dependencies (already installed)
+Flask>=2.0.0
+flask-cors>=3.0.0
+
+# Optional RAG dependencies for enhanced functionality
+# Install with: pip install -r python_requirements.txt
+
+# For OpenAI integration (recommended)
+openai>=0.27.0
+
+# For local embeddings (alternative to OpenAI)
+sentence-transformers>=2.2.0
+numpy>=1.21.0
+
+# For better text processing
+nltk>=3.8
+scikit-learn>=1.0.0
+
+# For PDF ticket generation
+reportlab>=3.6.0
+qrcode>=7.3.0
+Pillow>=9.0.0
+
+# Note: The system works without these dependencies using keyword-based fallback

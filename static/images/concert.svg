@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400" role="img" aria-label="Concert placeholder">
+  <defs>
+    <linearGradient id="g2" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ff512f"/>
+      <stop offset="100%" stop-color="#dd2476"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g2)"/>
+  <g fill="#fff" opacity="0.9">
+    <rect x="120" y="120" width="560" height="160" rx="12" ry="12" fill="#ffffff22" stroke="#fff"/>
+    <text x="400" y="205" font-family="Inter, Arial, sans-serif" font-size="42" text-anchor="middle">Concert</text>
+    <text x="400" y="240" font-family="Inter, Arial, sans-serif" font-size="18" text-anchor="middle" opacity="0.9">Placeholder image</text>
+  </g>
+</svg>

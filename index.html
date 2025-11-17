@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Hub - Book Your Entertainment</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chatbot.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="image-utils.js"></script>
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Event Hub</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link active">Home</a>
+                </li>
+                <li class="nav-item"><a href="#movies" class="nav-link">Movies</a></li>
+                <li class="nav-item"><a href="#events" class="nav-link">Events</a></li>
+                <li class="nav-item"><a href="#sports" class="nav-link">Sports</a></li>
+                <li class="nav-item"><a href="#play" class="nav-link">Play</a></li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link" id="profileNavLink">Profile</a>
+                </li>
+                <li class="nav-item" id="logoutNavItem" style="display: none;">
+                    <a href="#" class="nav-link" onclick="logout()">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Discover Amazing Events</h1>
+            <p class="hero-subtitle">Book tickets for movies, concerts, plays, sports and more</p>
+            
+            
+            <div class="search-container">
+                <form action="/search" method="GET" class="search-form" id="searchForm">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="query" placeholder="Search for events, movies, plays..." class="search-input" id="searchInput">
+                        <select name="mood" class="mood-filter" id="moodFilter">
+                            <option value="">All Moods</option>
+                            <option value="chill">😌 Chill</option>
+                            <option value="energetic">⚡ Energetic</option>
+                            <option value="romantic">💕 Romantic</option>
+                            <option value="learning">📚 Learning</option>
+                            <option value="adventure">🎯 Adventure</option>
+                            <option value="intense">🔥 Intense</option>
+                            <option value="thoughtful">🤔 Thoughtful</option>
+                            <option value="ambitious">🚀 Ambitious</option>
+                            <option value="creative">🎨 Creative</option>
+                            <option value="focused">🎯 Focused</option>
+                            <option value="determined">💪 Determined</option>
+                            <option value="mysterious">🔮 Mysterious</option>
+                            <option value="emotional">😢 Emotional</option>
+                        </select>
+                        <button type="submit" class="search-btn" id="searchBtn">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="hero-background"></div>
+    </section>
+
+    <!-- Search Results Section -->
+    <section id="search-results" class="events-section" style="display: none;">
+        <div class="container">
+            <div class="search-header">
+                <h2 class="section-title" id="search-title">🔍 Search Results</h2>
+                <button class="clear-search-btn" id="clearSearchBtn">
+                    <i class="fas fa-times"></i> Clear Search
+                </button>
+            </div>
+            <div class="events-grid" id="search-grid"></div>
+            <div class="no-results" id="no-results" style="display: none;">
+                <div class="no-results-content">
+                    <i class="fas fa-search no-results-icon"></i>
+                    <h3>No events found</h3>
+                    <p>Try searching with different keywords like "concert", "movie", "sports", or "play"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <section id="movies" class="events-section">
+        <div class="container">
+            <h2 class="section-title">🎬 Movies</h2>
+            <div class="events-grid" id="grid-movies"></div>
+        </div>
+    </section>
+
+    <section id="events" class="events-section">
+        <div class="container">
+            <h2 class="section-title">🎟️ Events</h2>
+            <div class="events-grid" id="grid-events"></div>
+        </div>
+    </section>
+
+    <section id="sports" class="events-section">
+        <div class="container">
+            <h2 class="section-title">🏆 Sports</h2>
+            <div class="events-grid" id="grid-sports"></div>
+        </div>
+    </section>
+
+    <section id="play" class="events-section">
+        <div class="container">
+            <h2 class="section-title">🎭 Play</h2>
+            <div class="events-grid" id="grid-play"></div>
+        </div>
+    </section>
+
+    
+    <section class="featured-events">
+        <div class="container">
+            <h2 class="section-title">Featured Events</h2>
+            <div class="slider-container">
+                <div class="slider" id="featuredSlider">
+                    <div class="slide active">
+                        <div class="slide-content">
+                            <img src="/placeholder.svg?height=400&width=600" alt="Featured Movie">
+                            <div class="slide-info">
+                                <h3>Action Blockbuster</h3>
+                                <p>Experience the ultimate action adventure</p>
+                                <button class="btn-primary">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <img src="/placeholder.svg?height=400&width=600" alt="Music Concert">
+                            <div class="slide-info">
+                                <h3>Summer Music Festival</h3>
+                                <p>Join the biggest music event of the year</p>
+                                <button class="btn-primary">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <img src="/placeholder.svg?height=400&width=600" alt="Theater Play">
+                            <div class="slide-info">
+                                <h3>Classic Theater</h3>
+                                <p>A timeless story brought to life</p>
+                                <button class="btn-primary">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="slider-btn prev" onclick="changeSlide(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-btn next" onclick="changeSlide(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="slider-dots">
+                    <span class="dot active" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                    <span class="dot" onclick="currentSlide(3)"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Event Hub</h3>
+                    <p>Your ultimate destination for entertainment booking</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="events.html">Browse Events</a></li>
+                        <li><a href="cart.html">Booking Cart</a></li>
+                        <li><a href="login.html">Login / Sign up</a></li>
+                        <li><a href="profile.html">My Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#movies">Movies</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#sports">Sports</a></li>
+                        <li><a href="#play">Play</a></li>
+                    </ul>
+                </div>
+                <!-- Social links removed per UX (non-functional) -->
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Event Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="cart-module.js"></script>
+    <script src="script.js"></script>
+    <script src="home.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

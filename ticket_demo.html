@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Generation Demo - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: var(--primary-black);
+            min-height: 100vh;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .demo-title {
+            font-size: 2.5rem;
+            color: var(--text-white);
+            margin-bottom: 16px;
+        }
+        
+        .demo-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+        }
+        
+        .ticket-preview {
+            background: var(--secondary-black);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid var(--border-gray);
+        }
+        
+        .ticket-sample {
+            max-width: 600px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border-radius: 8px;
+            padding: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ticket-sample::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 120px;
+            height: 100%;
+            background: #f5f5dc;
+            border-left: 2px dashed #dc3545;
+        }
+        
+        .ticket-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .ticket-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .ticket-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .ticket-field {
+            font-size: 0.9rem;
+        }
+        
+        .ticket-field strong {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .demo-events {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        
+        .demo-event-card {
+            background: var(--secondary-black);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-gray);
+            transition: transform 0.3s ease;
+        }
+        
+        .demo-event-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .event-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 12px;
+        }
+        
+        .event-details {
+            color: var(--text-gray);
+            margin-bottom: 16px;
+        }
+        
+        .event-detail {
+            margin: 4px 0;
+            font-size: 0.9rem;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--accent-pink);
+        }
+        
+        .instructions {
+            background: var(--secondary-black);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border-left: 4px solid var(--accent-blue);
+        }
+        
+        .instructions h3 {
+            color: var(--text-white);
+            margin-bottom: 16px;
+        }
+        
+        .instructions ul {
+            color: var(--text-gray);
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Back to Home
+        </a>
+        
+        <div class="demo-header">
+            <h1 class="demo-title">🎟️ Professional Ticket Generation</h1>
+            <p class="demo-subtitle">Download realistic PDF tickets for any event - matching cinema ticket design</p>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How It Works</h3>
+            <ul>
+                <li><strong>Click "Download Ticket"</strong> on any event below</li>
+                <li><strong>PDF Generation:</strong> Creates a professional red cinema ticket design</li>
+                <li><strong>Unique Details:</strong> Each ticket includes random seat/row and unique ticket ID</li>
+                <li><strong>Automatic Download:</strong> File saves as <code>EventName_ticket_12345678.pdf</code></li>
+                <li><strong>Success Notification:</strong> Shows confirmation message after download</li>
+            </ul>
+        </div>
+        
+        <div class="ticket-preview">
+            <h3 style="color: var(--text-white); text-align: center; margin-bottom: 24px;">📄 Sample Ticket Design</h3>
+            <div class="ticket-sample">
+                <div class="ticket-content">
+                    <div class="ticket-title">CINEMA TICKET</div>
+                    <div style="font-size: 1.2rem; font-weight: bold; margin: 8px 0;">AVENGERS: ENDGAME</div>
+                    <div class="ticket-info">
+                        <div class="ticket-field">
+                            <strong>DATE</strong>
+                            15 JAN
+                        </div>
+                        <div class="ticket-field">
+                            <strong>SEAT</strong>
+                            25
+                        </div>
+                        <div class="ticket-field">
+                            <strong>VENUE</strong>
+                            PVR Cinemas
+                        </div>
+                        <div class="ticket-field">
+                            <strong>ROW</strong>
+                            F
+                        </div>
+                    </div>
+                    <div style="background: #f5f5dc; color: #dc3545; padding: 4px 12px; border-radius: 4px; display: inline-block; margin-top: 12px; font-weight: bold; font-size: 0.9rem;">
+                        ADMIT ONE
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h3 style="color: var(--text-white); text-align: center; margin-bottom: 24px;">🎬 Try Downloading Tickets</h3>
+        
+        <div class="demo-events">
+            <div class="demo-event-card">
+                <div class="event-name">🎬 Avengers: Endgame</div>
+                <div class="event-details">
+                    <div class="event-detail"><i class="fas fa-calendar"></i> 2025-01-15 • 7:00 PM</div>
+                    <div class="event-detail"><i class="fas fa-map-marker-alt"></i> PVR Cinemas, Phoenix Mall</div>
+                    <div class="event-detail"><i class="fas fa-tag"></i> Energetic • Movies</div>
+                    <div class="event-detail"><i class="fas fa-rupee-sign"></i> ₹350</div>
+                </div>
+                <button class="download-btn" onclick="downloadTicket(1, 'Avengers: Endgame')">
+                    <i class="fas fa-download"></i>
+                    Download PDF Ticket
+                </button>
+            </div>
+            
+            <div class="demo-event-card">
+                <div class="event-name">🎵 Coldplay Live Concert</div>
+                <div class="event-details">
+                    <div class="event-detail"><i class="fas fa-calendar"></i> 2025-01-20 • 8:00 PM</div>
+                    <div class="event-detail"><i class="fas fa-map-marker-alt"></i> DY Patil Stadium</div>
+                    <div class="event-detail"><i class="fas fa-tag"></i> Energetic • Events</div>
+                    <div class="event-detail"><i class="fas fa-rupee-sign"></i> ₹2500</div>
+                </div>
+                <button class="download-btn" onclick="downloadTicket(2, 'Coldplay Live Concert')">
+                    <i class="fas fa-download"></i>
+                    Download PDF Ticket
+                </button>
+            </div>
+            
+            <div class="demo-event-card">
+                <div class="event-name">🎭 Romeo and Juliet</div>
+                <div class="event-details">
+                    <div class="event-detail"><i class="fas fa-calendar"></i> 2025-01-18 • 6:30 PM</div>
+                    <div class="event-detail"><i class="fas fa-map-marker-alt"></i> National Centre for Performing Arts</div>
+                    <div class="event-detail"><i class="fas fa-tag"></i> Romantic • Play</div>
+                    <div class="event-detail"><i class="fas fa-rupee-sign"></i> ₹800</div>
+                </div>
+                <button class="download-btn" onclick="downloadTicket(3, 'Romeo and Juliet')">
+                    <i class="fas fa-download"></i>
+                    Download PDF Ticket
+                </button>
+            </div>
+            
+            <div class="demo-event-card">
+                <div class="event-name">🏆 IPL Final Match</div>
+                <div class="event-details">
+                    <div class="event-detail"><i class="fas fa-calendar"></i> 2025-01-25 • 7:30 PM</div>
+                    <div class="event-detail"><i class="fas fa-map-marker-alt"></i> Wankhede Stadium</div>
+                    <div class="event-detail"><i class="fas fa-tag"></i> Energetic • Sports</div>
+                    <div class="event-detail"><i class="fas fa-rupee-sign"></i> ₹1500</div>
+                </div>
+                <button class="download-btn" onclick="downloadTicket(4, 'IPL Final Match')">
+                    <i class="fas fa-download"></i>
+                    Download PDF Ticket
+                </button>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding: 24px; background: var(--secondary-black); border-radius: 12px;">
+            <h4 style="color: var(--text-white); margin-bottom: 16px;">🔧 Technical Features</h4>
+            <div style="color: var(--text-gray); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; text-align: left;">
+                <div>✅ Professional red cinema ticket design</div>
+                <div>✅ Unique 8-digit ticket IDs</div>
+                <div>✅ Random seat and row generation</div>
+                <div>✅ QR code barcode integration</div>
+                <div>✅ Automatic PDF download</div>
+                <div>✅ Success notifications</div>
+                <div>✅ Mobile-responsive design</div>
+                <div>✅ No external dependencies required</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="home.js"></script>
+</body>
+</html>

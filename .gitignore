@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+tickets/*.pdf
+tickets/*.txt
+Release/
+*.pyd
+_eventhub_cffi.c
+
+# Test files
+test_*.html
+test_*.pdf
+test_*.py
+
+# Logs
+*.log
+
+# Environment variables
+.env.local
+.env.*.local

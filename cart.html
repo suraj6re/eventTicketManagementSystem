@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Cart - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+     Navigation 
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><a href="index.html">Event Hub</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Movies</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Sports</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Plays</a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link" id="profileNavLink">Profile</a>
+                </li>
+                <li class="nav-item" id="logoutNavItem" style="display: none;">
+                    <a href="#" class="nav-link" onclick="authSystem.logout()">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link active">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+     Login Required Message (shown if not authenticated) 
+    <div id="loginRequired" class="auth-section" style="display: none;">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Login Required</h2>
+                    <p>Please log in to view your booking cart</p>
+                </div>
+                <div class="auth-actions">
+                    <a href="login.html" class="btn-primary auth-btn">Go to Login</a>
+                    <a href="index.html" class="btn-secondary auth-btn">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     Cart Content (shown if authenticated) 
+    <div id="cartContent" style="display: none;">
+         Cart Header 
+        <section class="cart-header">
+            <div class="container">
+                <h1 class="page-title">Booking Cart</h1>
+                <p class="page-subtitle">Review your selected events and proceed to booking</p>
+            </div>
+        </section>
+
+         Cart Content 
+        <section class="cart-section">
+            <div class="container">
+                <div class="cart-container" id="cartContainer">
+                     Cart content will be populated by JavaScript 
+                </div>
+            </div>
+        </section>
+    </div>
+
+     Booking Confirmation Modal 
+    <div class="modal" id="bookingModal">
+        <div class="modal-content checkout-modal">
+            <div class="modal-header">
+                <h3>Complete Your Booking</h3>
+                <button class="modal-close" onclick="closeBookingModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="checkout-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Review</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Payment</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Confirmation</div>
+                    </div>
+                </div>
+
+                <div class="checkout-content">
+                     Step 1: Review Booking Details 
+                    <div class="checkout-step active" id="step1">
+                        <h4>Review Your Booking</h4>
+                        <div id="bookingReviewItems">
+                             Review items will be populated by JavaScript 
+                        </div>
+                        <div class="booking-notes">
+                            <h5>Important Notes:</h5>
+                            <ul>
+                                <li>Tickets are non-refundable after booking confirmation</li>
+                                <li>Please arrive 30 minutes before the event starts</li>
+                                <li>Valid ID proof required at the venue</li>
+                                <li>Mobile tickets will be sent to your registered email</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                     Step 2: Payment Information 
+                    <div class="checkout-step" id="step2">
+                        <h4>Payment Information</h4>
+                        <div class="payment-methods">
+                            <div class="payment-method active" data-method="card">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Credit/Debit Card</span>
+                            </div>
+                            <div class="payment-method" data-method="upi">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>UPI</span>
+                            </div>
+                            <div class="payment-method" data-method="wallet">
+                                <i class="fas fa-wallet"></i>
+                                <span>Digital Wallet</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-form" id="cardPayment">
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number *</label>
+                                <input type="text" id="cardNumber" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiryDate">Expiry Date *</label>
+                                    <input type="text" id="expiryDate" class="form-input" placeholder="MM/YY" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV *</label>
+                                    <input type="text" id="cvv" class="form-input" placeholder="123" maxlength="4">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardName">Name on Card *</label>
+                                <input type="text" id="cardName" class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="payment-form" id="upiPayment" style="display: none;">
+                            <div class="form-group">
+                                <label for="upiId">UPI ID *</label>
+                                <input type="text" id="upiId" class="form-input" placeholder="yourname@upi">
+                            </div>
+                        </div>
+
+                        <div class="payment-form" id="walletPayment" style="display: none;">
+                            <div class="wallet-options">
+                                <div class="wallet-option">
+                                    <input type="radio" id="paytm" name="wallet" value="paytm">
+                                    <label for="paytm">Paytm</label>
+                                </div>
+                                <div class="wallet-option">
+                                    <input type="radio" id="phonepe" name="wallet" value="phonepe">
+                                    <label for="phonepe">PhonePe</label>
+                                </div>
+                                <div class="wallet-option">
+                                    <input type="radio" id="googlepay" name="wallet" value="googlepay">
+                                    <label for="googlepay">Google Pay</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     Step 3: Booking Confirmation 
+                    <div class="checkout-step" id="step3">
+                        <div class="confirmation-content">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h4>Booking Confirmed!</h4>
+                            <p>Your tickets have been booked successfully. You will receive a confirmation email shortly with your mobile tickets.</p>
+                            <div class="booking-reference">
+                                <strong>Booking Reference: <span id="bookingReference">BK2025001</span></strong>
+                            </div>
+                            <div class="booking-actions">
+                                <button class="btn-primary" onclick="downloadTickets()">
+                                    <i class="fas fa-download"></i> Download Tickets
+                                </button>
+                                <button class="btn-secondary" onclick="viewBookingDetails()">
+                                    <i class="fas fa-eye"></i> View Booking Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-summary">
+                    <h4>Booking Summary</h4>
+                    <div class="summary-items" id="checkoutSummaryItems">
+                         Summary items will be populated by JavaScript 
+                    </div>
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="checkoutSubtotal">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Convenience Fee</span>
+                            <span id="checkoutConvenienceFee">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>GST (18%)</span>
+                            <span id="checkoutGst">₹0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total Amount</span>
+                            <span id="checkoutTotal">₹0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="prevStepBtn" onclick="previousStep()" style="display: none;">Previous</button>
+                <button class="btn-primary" id="nextStepBtn" onclick="nextStep()">Continue</button>
+            </div>
+        </div>
+    </div>
+
+     Footer 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Event Hub</h3>
+                    <p>Your ultimate destination for entertainment booking</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="events.html">Browse Events</a></li>
+                        <li><a href="cart.html">Booking Cart</a></li>
+                        <li><a href="login.html">Login / Sign up</a></li>
+                        <li><a href="profile.html">My Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="events.html">Movies</a></li>
+                        <li><a href="events.html">Concerts</a></li>
+                        <li><a href="events.html">Sports</a></li>
+                        <li><a href="events.html">Plays</a></li>
+                    </ul>
+                </div>
+                <!-- Social links removed per UX (non-functional) -->
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Event Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="cart-module.js"></script>
+    <script src="script.js"></script>
+    <script src="cart.js"></script>
+</body>
+</html>

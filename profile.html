@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chatbot.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><a href="index.html">Event Hub</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#movies" class="nav-link">Movies</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#events" class="nav-link">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#sports" class="nav-link">Sports</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#play" class="nav-link">Plays</a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link active" id="profileNavLink">Profile</a>
+                </li>
+                <li class="nav-item" id="logoutNavItem" style="display: none;">
+                    <a href="#" class="nav-link" onclick="logout()">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Required Message (shown if not authenticated) -->
+    <div id="loginRequired" class="auth-section" style="display: none;">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Login Required</h2>
+                    <p>Please log in to view your profile</p>
+                </div>
+                <div class="auth-actions">
+                    <a href="login.html" class="btn-primary auth-btn">Go to Login</a>
+                    <a href="index.html" class="btn-secondary auth-btn">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Content (shown if authenticated) -->
+    <div id="profileContent" style="display: none;">
+        <!-- Profile Header -->
+        <section class="profile-header">
+            <div class="container">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <img src="/diverse-user-avatars.png" alt="Profile Avatar" id="profileAvatar">
+                        <button class="avatar-edit" onclick="editAvatar()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-details">
+                        <h1 id="profileName">John Doe</h1>
+                        <p id="profileEmail">john.doe@example.com</p>
+                        <p id="profileMemberSince">Member since January 2025</p>
+                        <button class="btn-secondary" onclick="editProfile()">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalBookings">0</div>
+                            <div class="stat-label">Total Bookings</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalSpent">₹0</div>
+                            <div class="stat-label">Total Spent</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="favoriteEvents">0</div>
+                            <div class="stat-label">Favorite Events</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Tabs -->
+        <section class="profile-tabs">
+            <div class="container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="bookings">
+                        <i class="fas fa-ticket-alt"></i> My Bookings
+                    </button>
+                    <button class="tab-btn" data-tab="favorites">
+                        <i class="fas fa-heart"></i> Favorites
+                    </button>
+                    <button class="tab-btn" data-tab="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+
+                <!-- Bookings Tab -->
+                <div class="tab-panel active" id="bookings">
+                    <div class="bookings-header">
+                        <h2>My Bookings</h2>
+                        <select id="bookingFilter" class="filter-select">
+                            <option value="all">All Bookings</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="past">Past</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="bookings-list" id="bookingsList">
+                        <!-- Bookings will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Favorites Tab -->
+                <div class="tab-panel" id="favorites">
+                    <div class="favorites-header">
+                        <h2>Favorite Events</h2>
+                        <p>Events you've marked as favorites</p>
+                    </div>
+                    <div class="favorites-grid" id="favoritesGrid">
+                        <!-- Favorites will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-panel" id="settings">
+                    <div class="settings-sections">
+                        <!-- Personal Information -->
+                        <div class="settings-section">
+                            <h3>Personal Information</h3>
+                            <form id="personalInfoForm" class="settings-form">
+                                <div class="form-group">
+                                    <label for="fullName">Full Name</label>
+                                    <input type="text" id="fullName" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="location">Preferred Location</label>
+                                    <select id="location" class="form-input">
+                                        <option value="mumbai">Mumbai</option>
+                                        <option value="delhi">Delhi</option>
+                                        <option value="bangalore">Bangalore</option>
+                                        <option value="chennai">Chennai</option>
+                                        <option value="kolkata">Kolkata</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+
+                        <!-- Account Settings -->
+                        <div class="settings-section">
+                            <h3>Account Settings</h3>
+                            <div class="settings-actions">
+                                <button class="btn-secondary" onclick="changePassword()">
+                                    <i class="fas fa-key"></i> Change Password
+                                </button>
+                                <button class="btn-secondary" onclick="downloadData()">
+                                    <i class="fas fa-download"></i> Download My Data
+                                </button>
+                                <button class="btn-danger" onclick="deleteAccount()">
+                                    <i class="fas fa-trash"></i> Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-overlay" onclick="closeEditProfileModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="modal-close" onclick="closeEditProfileModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm" class="edit-profile-form">
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" id="editFullName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email Address</label>
+                        <input type="email" id="editEmail" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Phone Number</label>
+                        <input type="tel" id="editPhone" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBio">Bio</label>
+                        <textarea id="editBio" class="form-input" rows="3" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <button type="button" class="btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Event Hub</h3>
+                    <p>Your ultimate destination for entertainment booking</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="events.html">Browse Events</a></li>
+                        <li><a href="cart.html">Booking Cart</a></li>
+                        <li><a href="login.html">Login / Sign up</a></li>
+                        <li><a href="profile.html">My Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="events.html">Movies</a></li>
+                        <li><a href="events.html">Concerts</a></li>
+                        <li><a href="events.html">Sports</a></li>
+                        <li><a href="events.html">Plays</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Event Hub. All rights reserved.</p>
+            </div>
+        </div>
+        </div>
+
+        <script src="api.js"></script>
+        <script src="auth.js"></script>
+        <script src="cart-module.js"></script>
+        <script src="script.js"></script>
+        <script src="profile.js"></script>
+        <script src="chatbot.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chatbot.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Event Hub</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item"><a href="index.html#movies" class="nav-link">Movies</a></li>
+                <li class="nav-item"><a href="index.html#events" class="nav-link">Events</a></li>
+                <li class="nav-item"><a href="index.html#sports" class="nav-link">Sports</a></li>
+                <li class="nav-item"><a href="index.html#play" class="nav-link">Play</a></li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link" id="profileNavLink">Profile</a>
+                </li>
+                <li class="nav-item" id="logoutNavItem" style="display: none;">
+                    <a href="#" class="nav-link" onclick="authSystem.logout()">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Results Header -->
+    <section class="search-results-header">
+        <div class="container">
+            <div class="search-header-content">
+                <h1 class="search-results-title">
+                    🔍 Search Results
+                    {% if query or mood %}
+                        {% if query and mood %}
+                            for "{{ query }}" with {{ mood|title }} mood
+                        {% elif query %}
+                            for "{{ query }}"
+                        {% elif mood %}
+                            for {{ mood|title }} mood
+                        {% endif %}
+                    {% endif %}
+                </h1>
+                <p class="search-results-subtitle">
+                    Found {{ total_results }} event{{ 's' if total_results != 1 else '' }}
+                </p>
+                
+                <!-- Search Again Form -->
+                <form action="/search" method="GET" class="search-again-form">
+                    <div class="search-box-small">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="query" placeholder="Search for events..." class="search-input" value="{{ query }}">
+                        <select name="mood" class="mood-filter">
+                            <option value="">All Moods</option>
+                            <option value="chill" {{ 'selected' if mood == 'chill' else '' }}>😌 Chill</option>
+                            <option value="energetic" {{ 'selected' if mood == 'energetic' else '' }}>⚡ Energetic</option>
+                            <option value="romantic" {{ 'selected' if mood == 'romantic' else '' }}>💕 Romantic</option>
+                            <option value="learning" {{ 'selected' if mood == 'learning' else '' }}>📚 Learning</option>
+                            <option value="adventure" {{ 'selected' if mood == 'adventure' else '' }}>🎯 Adventure</option>
+                            <option value="intense" {{ 'selected' if mood == 'intense' else '' }}>🔥 Intense</option>
+                            <option value="thoughtful" {{ 'selected' if mood == 'thoughtful' else '' }}>🤔 Thoughtful</option>
+                            <option value="ambitious" {{ 'selected' if mood == 'ambitious' else '' }}>🚀 Ambitious</option>
+                            <option value="creative" {{ 'selected' if mood == 'creative' else '' }}>🎨 Creative</option>
+                            <option value="focused" {{ 'selected' if mood == 'focused' else '' }}>🎯 Focused</option>
+                            <option value="determined" {{ 'selected' if mood == 'determined' else '' }}>💪 Determined</option>
+                            <option value="mysterious" {{ 'selected' if mood == 'mysterious' else '' }}>🔮 Mysterious</option>
+                            <option value="emotional" {{ 'selected' if mood == 'emotional' else '' }}>😢 Emotional</option>
+                        </select>
+                        <button type="submit" class="search-btn">Search</button>
+                    </div>
+                </form>
+                
+                <a href="index.html" class="back-home-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Results -->
+    <section class="search-results-section">
+        <div class="container">
+            {% if results %}
+                <div class="events-grid">
+                    {% for event in results %}
+                    <div class="event-card" onclick="location.href='event-details.html?id={{ event.id }}'">
+                        <img src="{{ event.image_url }}" alt="{{ event.name }}" class="event-image">
+                        <div class="event-info">
+                            <div class="event-content">
+                                <div class="event-badges">
+                                    <span class="event-category">{{ event.category|title }}</span>
+                                    <span class="event-mood mood-{{ event.mood }}">
+                                        {% if event.mood == 'chill' %}😌 Chill
+                                        {% elif event.mood == 'energetic' %}⚡ Energetic
+                                        {% elif event.mood == 'romantic' %}💕 Romantic
+                                        {% elif event.mood == 'learning' %}📚 Learning
+                                        {% elif event.mood == 'adventure' %}🎯 Adventure
+                                        {% elif event.mood == 'intense' %}🔥 Intense
+                                        {% elif event.mood == 'thoughtful' %}🤔 Thoughtful
+                                        {% elif event.mood == 'ambitious' %}🚀 Ambitious
+                                        {% elif event.mood == 'creative' %}🎨 Creative
+                                        {% elif event.mood == 'focused' %}🎯 Focused
+                                        {% elif event.mood == 'determined' %}💪 Determined
+                                        {% elif event.mood == 'mysterious' %}🔮 Mysterious
+                                        {% elif event.mood == 'emotional' %}😢 Emotional
+                                        {% else %}{{ event.mood|title }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <h3 class="event-title">{{ event.name }}</h3>
+                                <div class="event-details">
+                                    <div class="event-detail">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>{{ event.date }}</span>
+                                    </div>
+                                    <div class="event-detail">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>{{ event.venue }}</span>
+                                    </div>
+                                    <div class="event-detail">
+                                        <i class="fas fa-ticket-alt"></i>
+                                        <span>{{ event.available_seats }}</span>
+                                    </div>
+                                    <div class="event-detail">
+                                        <i class="fas fa-rupee-sign"></i>
+                                        <span>₹{{ event.price }}</span>
+                                    </div>
+                                </div>
+                                <p class="event-description">{{ event.description }}</p>
+                            </div>
+                            <div class="event-actions">
+                                <a href="event-details.html?id={{ event.id }}" class="btn-secondary">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-results">
+                    <div class="no-results-content">
+                        <i class="fas fa-search no-results-icon"></i>
+                        <h3>No matching events found</h3>
+                        <p>
+                            {% if query and mood %}
+                                We couldn't find any events matching "{{ query }}" with {{ mood }} mood.
+                            {% elif query %}
+                                We couldn't find any events matching "{{ query }}".
+                            {% elif mood %}
+                                We couldn't find any events with {{ mood }} mood.
+                            {% else %}
+                                Please try a different search term or mood filter.
+                            {% endif %}
+                        </p>
+                        <div class="search-suggestions">
+                            <h4>Try searching for:</h4>
+                            <div class="suggestion-tags">
+                                <a href="/search?query=concert" class="suggestion-tag">Concert</a>
+                                <a href="/search?query=movie" class="suggestion-tag">Movie</a>
+                                <a href="/search?query=sports" class="suggestion-tag">Sports</a>
+                                <a href="/search?query=play" class="suggestion-tag">Play</a>
+                                <a href="/search?mood=energetic" class="suggestion-tag">⚡ Energetic</a>
+                                <a href="/search?mood=chill" class="suggestion-tag">😌 Chill</a>
+                                <a href="/search?mood=romantic" class="suggestion-tag">💕 Romantic</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Event Hub</h3>
+                    <p>Your ultimate destination for entertainment booking</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="events.html">Browse Events</a></li>
+                        <li><a href="cart.html">Booking Cart</a></li>
+                        <li><a href="login.html">Login / Sign up</a></li>
+                        <li><a href="profile.html">My Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="index.html#movies">Movies</a></li>
+                        <li><a href="index.html#events">Events</a></li>
+                        <li><a href="index.html#sports">Sports</a></li>
+                        <li><a href="index.html#play">Play</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Event Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="cart-module.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

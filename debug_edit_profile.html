@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Edit Profile - Event Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .debug-panel {
+            background: var(--secondary-black);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid var(--border-gray);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .debug-panel h3 { color: var(--accent-blue); margin-bottom: 10px; }
+        .debug-button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid var(--accent-blue);
+            background: var(--primary-black);
+        }
+        .log-error { border-left-color: #e74c3c; }
+        .log-success { border-left-color: #27ae60; }
+        .log-warning { border-left-color: #f39c12; }
+    </style>
+</head>
+<body>
+    <h1>🐛 Debug Edit Profile</h1>
+    
+    <div class="debug-panel">
+        <h3>Quick Actions</h3>
+        <button class="debug-button" onclick="createUser()">Create User</button>
+        <button class="debug-button" onclick="testEditProfile()">Test Edit Profile</button>
+        <button class="debug-button" onclick="inspectDOM()">Inspect DOM</button>
+        <button class="debug-button" onclick="clearLogs()">Clear Logs</button>
+    </div>
+
+    <div class="debug-panel">
+        <h3>System Status</h3>
+        <div id="systemStatus">Loading...</div>
+    </div>
+
+    <div class="debug-panel">
+        <h3>Debug Logs</h3>
+        <div id="debugLogs"></div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-overlay" onclick="closeEditProfileModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="modal-close" onclick="closeEditProfileModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm" class="edit-profile-form">
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" id="editFullName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email Address</label>
+                        <input type="email" id="editEmail" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Phone Number</label>
+                        <input type="tel" id="editPhone" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBio">Bio</label>
+                        <textarea id="editBio" class="form-input" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <button type="button" class="btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="profile.js"></script>
+    <script>
+        let debugLogs = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            debugLogs.push({ timestamp, message, type });
+            updateDebugDisplay();
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function updateDebugDisplay() {
+            const container = document.getElementById('debugLogs');
+            const html = debugLogs.slice(-20).map(entry => {
+                const className = `log-entry log-${entry.type}`;
+                return `<div class="${className}">[${entry.timestamp}] ${entry.message}</div>`;
+            }).join('');
+            container.innerHTML = html || '<div class="log-entry">No logs yet</div>';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateSystemStatus() {
+            const status = document.getElementById('systemStatus');
+            const checks = [];
+
+            // Check profileSystem
+            if (window.profileSystem) {
+                checks.push('✅ profileSystem: Available');
+                if (profileSystem.currentUser) {
+                    checks.push(`✅ Current User: ${profileSystem.currentUser.name} (${profileSystem.currentUser.email})`);
+                } else {
+                    checks.push('⚠️ Current User: None');
+                }
+            } else {
+                checks.push('❌ profileSystem: Not found');
+            }
+
+            // Check authSystem
+            if (window.authSystem) {
+                checks.push('✅ authSystem: Available');
+            } else {
+                checks.push('❌ authSystem: Not found');
+            }
+
+            // Check editProfile function
+            if (typeof editProfile === 'function') {
+                checks.push('✅ editProfile function: Available');
+            } else {
+                checks.push('❌ editProfile function: Not found');
+            }
+
+            // Check modal
+            const modal = document.getElementById('editProfileModal');
+            if (modal) {
+                checks.push('✅ Edit Profile Modal: Found');
+            } else {
+                checks.push('❌ Edit Profile Modal: Not found');
+            }
+
+            // Check form elements
+            const formElements = ['editFullName', 'editEmail', 'editPhone', 'editBio'];
+            const missingElements = formElements.filter(id => !document.getElementById(id));
+            if (missingElements.length === 0) {
+                checks.push('✅ Form Elements: All found');
+            } else {
+                checks.push(`❌ Form Elements: Missing ${missingElements.join(', ')}`);
+            }
+
+            status.innerHTML = checks.join('<br>');
+        }
+
+        function createUser() {
+            log('Creating test user...');
+            
+            const testUser = {
+                id: 'debug_user_' + Date.now(),
+                email: 'debug@example.com',
+                name: 'Debug User',
+                phone: '+1234567890',
+                bio: 'Debug test user',
+                joinDate: new Date().toISOString()
+            };
+
+            // Initialize profileSystem if needed
+            if (!window.profileSystem) {
+                log('Initializing profileSystem...', 'warning');
+                window.profileSystem = {
+                    currentUser: null,
+                    showNotification: function(message, type = "info") {
+                        log(`Notification: ${message}`, type);
+                    }
+                };
+            }
+
+            profileSystem.currentUser = testUser;
+            localStorage.setItem("eventHubCurrentUser", JSON.stringify(testUser));
+            
+            log('Test user created successfully', 'success');
+            updateSystemStatus();
+        }
+
+        function testEditProfile() {
+            log('Testing editProfile function...');
+            
+            if (!profileSystem?.currentUser) {
+                log('No user found - creating one first', 'warning');
+                createUser();
+            }
+
+            try {
+                log('Calling editProfile()...');
+                editProfile();
+                log('editProfile() call completed', 'success');
+                
+                // Check if modal opened
+                setTimeout(() => {
+                    const modal = document.getElementById('editProfileModal');
+                    if (modal && modal.classList.contains('active')) {
+                        log('Modal opened successfully', 'success');
+                    } else {
+                        log('Modal did not open', 'error');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                log(`Error calling editProfile: ${error.message}`, 'error');
+            }
+        }
+
+        function inspectDOM() {
+            log('Inspecting DOM elements...');
+            
+            const elements = [
+                'editProfileModal',
+                'editFullName', 
+                'editEmail',
+                'editPhone',
+                'editBio',
+                'editProfileForm'
+            ];
+
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    log(`✅ ${id}: Found (${element.tagName})`, 'success');
+                } else {
+                    log(`❌ ${id}: Not found`, 'error');
+                }
+            });
+
+            // Check if scripts loaded
+            const scripts = ['authSystem', 'profileSystem', 'editProfile'];
+            scripts.forEach(name => {
+                if (window[name]) {
+                    log(`✅ ${name}: Available`, 'success');
+                } else {
+                    log(`❌ ${name}: Not available`, 'error');
+                }
+            });
+        }
+
+        function clearLogs() {
+            debugLogs = [];
+            updateDebugDisplay();
+            log('Debug logs cleared');
+        }
+
+        function closeEditProfileModal() {
+            const modal = document.getElementById("editProfileModal");
+            if (modal) {
+                modal.classList.remove("active");
+                document.body.style.overflow = "auto";
+                log('Modal closed', 'success');
+            }
+        }
+
+        // Override console methods to capture logs
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        
+        console.log = function(...args) {
+            log(args.join(' '), 'info');
+            originalConsoleLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            log(args.join(' '), 'error');
+            originalConsoleError.apply(console, args);
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Debug page loaded');
+            updateSystemStatus();
+            
+            // Auto-update system status every 2 seconds
+            setInterval(updateSystemStatus, 2000);
+        });
+    </script>
+</body>
+</html>
