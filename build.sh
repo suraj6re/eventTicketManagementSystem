@@ -8,8 +8,9 @@ apt-get update && apt-get install -y gcc || true
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Compile C backend
-python -c "from scripts.eventhub_binding import _build_module; _build_module()"
+# Try to compile C backend, but don't fail if it doesn't work
+echo "Attempting to compile C backend..."
+python -c "from scripts.eventhub_binding import _build_module; _build_module()" || echo "Warning: C backend compilation failed, will run in fallback mode"
 
 # Create tickets directory
 mkdir -p tickets

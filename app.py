@@ -8,7 +8,15 @@ from typing import List, Dict, Any, Optional
 from flask import Flask, jsonify, request, send_from_directory, Blueprint, render_template, send_file, session
 from flask_cors import CORS
 
-from scripts.eventhub_binding import EventHub
+# Try to import EventHub, but make it optional for deployment
+try:
+    from scripts.eventhub_binding import EventHub
+    EVENTHUB_AVAILABLE = True
+except ImportError as e:
+    print(f"EventHub C backend not available: {e}")
+    print("Running in fallback mode without C backend")
+    EVENTHUB_AVAILABLE = False
+    EventHub = None
 
 # Optional imports for PDF ticket generation
 try:
@@ -43,7 +51,12 @@ CORS(app)
 app.static_folder = str(ROOT / 'static')
 app.static_url_path = '/static'
 
-eh = EventHub()
+# Initialize EventHub only if available
+if EVENTHUB_AVAILABLE:
+    eh = EventHub()
+else:
+    eh = None
+    
 import logging
 logger = logging.getLogger("EventHubServer")
 if not logger.handlers:
@@ -829,6 +842,8 @@ def add_event():
     Body: { id, name, category, venue, total }
     Categories expected by native: Movies | Plays | Sports | Concerts
     """
+    if not EVENTHUB_AVAILABLE:
+        return jsonify(error="EventHub backend not available"), 503
     data = request.get_json(force=True)
     event_id = str(data.get("id") or "").strip()
     name = (data.get("name") or "").strip()
